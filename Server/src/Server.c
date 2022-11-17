@@ -68,82 +68,82 @@ int main(int argc, char *argv[]){
 #endif
 
 	/* Socket utilizzata per instaurare una connessione */
-	int NewSocket;
+	int nuovaSocket;
 
 	/* Chiamare la funzione socket() assegnando il valore di ritorno alla variabile appena creata */
-	NewSocket=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+	nuovaSocket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
 	/* 0 perchè indica il protocollo di default per la famiglia di protocolli e il tipo */
 
 	/* Se la creazione della socket di benvenuto genera errori, il programma termina */
-	if (NewSocket < 0){
+	if (nuovaSocket < 0){
 		ErrorHandler("Creazione della socket fallita.\n");
-		closesocket(NewSocket);
+		closesocket(nuovaSocket);
 		ClearWinSock();
 		return -1;
 	}
 
 
-	struct sockaddr_in sad;
+	struct sockaddr_in indirizzoServer;
 
-	memset(&sad,0,sizeof(sad));
+	memset(&indirizzoServer,0,sizeof(indirizzoServer));
 	// Si avvalora serverAddress assegnando un indirizzo localhost
-	sad.sin_family=AF_INET;
-	sad.sin_addr.s_addr=inet_addr("127.0.0.1"); // La funzione inet_addr converte l'indirizzo in notazione puntata in un numero a 32 bit
+	indirizzoServer.sin_family=AF_INET;
+	indirizzoServer.sin_addr.s_addr=inet_addr("127.0.0.1"); // La funzione inet_addr converte l'indirizzo in notazione puntata in un numero a 32 bit
 	// htons converte un numero dal formato del computer locale a quello della rete secondo il modello Big Endian
-	sad.sin_port=htons(27015); // 27015 è il numero di porta di default definito all'inizio
+	indirizzoServer.sin_port=htons(27015); // 27015 è il numero di porta di default definito all'inizio
 
 	/**
 	* @brief bind() associa alla socket un indirizzo in modo da poter essere contatta da un client
 	* e in caso di errore termina l'esecuzione del programma
 	*/
-	if (bind(NewSocket,(struct sockaddr*)&sad,sizeof(sad))<0){
+	if (bind(nuovaSocket,(struct sockaddr*)&indirizzoServer,sizeof(indirizzoServer)) < 0){
 		ErrorHandler("Operazione di bind fallita.\n");
-		closesocket(NewSocket);
+		closesocket(nuovaSocket);
 		ClearWinSock();
 		return 0;
 	}
 
 	// Si imposta la socket del server all'ascolto
-	if (listen(NewSocket, QLEN)<0){
+	if (listen(nuovaSocket, QLEN)<0){
 		ErrorHandler("Operazione di listen fallita.\n");
-		closesocket(NewSocket);
+		closesocket(nuovaSocket);
 		ClearWinSock();
 		return -1;
 	}
 
 	// New Connection
-	struct sockaddr_in cad;
-	int clientSocket;
-	int clientLen;
+	struct sockaddr_in indirizzoClient;
+	int socketClient;
+	int lunghezzaClient;
 	int stringLen=0;
 	printf ("In attesa del client...");
 	while(1){
-		clientLen=sizeof(cad);
-		if ((clientSocket=accept(NewSocket,(struct sockaddr*)&cad,&clientLen))<0){
+		lunghezzaClient=sizeof(indirizzoClient);
+		if ((socketClient=accept(nuovaSocket,(struct sockaddr*)&indirizzoClient,&lunghezzaClient))<0){
 			ErrorHandler("Accettazione fallita.\n");
-			closesocket(NewSocket);
+			closesocket(nuovaSocket);
 			ClearWinSock();
 			return-1;
 		}
-		printf ("Indirizzo client %s\n",inet_ntoa(cad.sin_addr));
+		printf ("Indirizzo client %s\n",inet_ntoa(indirizzoClient.sin_addr));
 		char*buf="Connessione instaurata";
 		stringLen=strlen(buf);
-		if (send(clientSocket,buf,stringLen,0)!=stringLen){
+		if (send(socketClient,buf,stringLen,0)!=stringLen){
 			ErrorHandler("E' stato inviato un numero differente di byte.");
-			closesocket(clientSocket);
+			closesocket(socketClient);
 			ClearWinSock();
 			system("PAUSE");
 			return -1;
 		}
 		int bytestring1;
 		char string1[BUFFERSIZE];
-		bytestring1=recv(clientSocket,string1,BUFFERSIZE-1,0);
+		bytestring1=recv(socketClient,string1,BUFFERSIZE-1,0);
 		string1[bytestring1]='\0';
 		printf ("Client: %s\n",string1);
 		char welcome[BUFFERSIZE]="ack";
-		if(send(clientSocket,welcome,strlen(welcome),0)!=strlen(welcome)){
+		if(send(socketClient,welcome,strlen(welcome),0)!=strlen(welcome)){
 			ErrorHandler("E' stato inviato un numero differente di byte.");
-			closesocket(clientSocket);
+			closesocket(socketClient);
 			ClearWinSock();
 			system("PAUSE");
 			return -1;
