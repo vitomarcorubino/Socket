@@ -2,8 +2,6 @@
  ============================================================================
  Name        : Server.c
  Authors     : Giovanni Priore, Vito Marco Rubino, Simone Signorile
- Version     :
- Copyright   :
  Description : Processo Server
  ============================================================================
  */
@@ -21,7 +19,6 @@
 
 /**
  * @brief Codice per implementare un programma portabile, cioè adatto sia a piattaforma Windows che Unix
- *
  */
 #if defined WIN32
 #include <winsock.h>
@@ -47,34 +44,32 @@ void ClearWinSock (){
 }
 
 int main(int argc, char *argv[]){
-
-	int port;
+	int porta;
 	if (argc > 1){
-		port = atoi(argv[1]);
+		porta = atoi(argv[1]);
 	}
-	else port = PROTOPORT;	// Default
-	if (port < 0){
-		printf ("Numero di porta non valido %s \n",argv[1]);
+	else porta = PROTOPORT;	// Default
+	if (porta < 0){
+		printf ("Numero di porta non valido %s \n", argv[1]);
 		return -1;
 	}
 
-#if defined WIN32
-	WSADATA WSAData;
-	int iresult = WSAStartup(MAKEWORD(2,2), &WSAData);
-	if (iresult!=0){
-		ErrorHandler("Errore in WSAStartup\n");
-		return -1;
-	}
-#endif
+	#if defined WIN32
+		WSADATA WSAData;
+		int iresult = WSAStartup(MAKEWORD(2,2), &WSAData);
+		if (iresult!=0){
+			ErrorHandler("Errore in WSAStartup\n");
+			return -1;
+		}
+	#endif
 
 	/* Socket utilizzata per instaurare una connessione */
 	int nuovaSocket;
 
-	/* Chiamare la funzione socket() assegnando il valore di ritorno alla variabile appena creata */
+	/* Si chiama la funzione socket() assegnando il valore di ritorno alla variabile appena creata */
 	nuovaSocket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
-	/* 0 perchè indica il protocollo di default per la famiglia di protocolli e il tipo */
 
-	/* Se la creazione della socket di benvenuto genera errori, il programma termina */
+	/* Se la creazione della socket genera errori, il programma termina */
 	if (nuovaSocket < 0){
 		ErrorHandler("Creazione della socket fallita.\n");
 		closesocket(nuovaSocket);
@@ -82,21 +77,22 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 
-
+	/* COSTRUZIONE DELL'INDIRIZZO DEL SERVER */
 	struct sockaddr_in indirizzoServer;
 
-	memset(&indirizzoServer,0,sizeof(indirizzoServer));
-	// Si avvalora serverAddress assegnando un indirizzo localhost
+	memset(&indirizzoServer, 0, sizeof(indirizzoServer));
+	// Si avvalora indirizzoServer assegnando un indirizzo localhost
 	indirizzoServer.sin_family=AF_INET;
 	indirizzoServer.sin_addr.s_addr=inet_addr("127.0.0.1"); // La funzione inet_addr converte l'indirizzo in notazione puntata in un numero a 32 bit
 	// htons converte un numero dal formato del computer locale a quello della rete secondo il modello Big Endian
 	indirizzoServer.sin_port=htons(27015); // 27015 è il numero di porta di default definito all'inizio
 
+	/* 1) IL SERVER È AVVIATO SU UNA DATA PORTA [27015] */
 	/**
 	* @brief bind() associa alla socket un indirizzo in modo da poter essere contatta da un client
 	* e in caso di errore termina l'esecuzione del programma
 	*/
-	if (bind(nuovaSocket,(struct sockaddr*)&indirizzoServer,sizeof(indirizzoServer)) < 0){
+	if (bind(nuovaSocket, (struct sockaddr*)&indirizzoServer, sizeof(indirizzoServer)) < 0){
 		ErrorHandler("Operazione di bind fallita.\n");
 		closesocket(nuovaSocket);
 		ClearWinSock();
@@ -116,7 +112,8 @@ int main(int argc, char *argv[]){
 	int socketClient;
 	int lunghezzaClient;
 	int stringLen=0;
-	printf ("In attesa del client...");
+	printf ("In attesa del client...\n");
+
 	while(1){
 		lunghezzaClient=sizeof(indirizzoClient);
 		if ((socketClient=accept(nuovaSocket,(struct sockaddr*)&indirizzoClient,&lunghezzaClient))<0){
@@ -125,23 +122,78 @@ int main(int argc, char *argv[]){
 			ClearWinSock();
 			return-1;
 		}
-		printf ("Indirizzo client %s\n",inet_ntoa(indirizzoClient.sin_addr));
-		char*buf="Connessione instaurata";
-		stringLen=strlen(buf);
-		if (send(socketClient,buf,stringLen,0)!=stringLen){
+
+		/* 4) STABILITA LA CONNESSIONE, IL SERVER VISUALIZZA SULLO std output UN MESSAGGIO CONTENENTE
+		 *    L'IP DEL CLIENT CON CUI HA STABILITO LA CONNESSIONE.
+		 */
+		printf("Connessione stabilita con il client: %s\n", inet_ntoa(indirizzoClient.sin_addr));
+
+		// Inviamo al client la conferma di avvenuta connessione
+		char*buf = "Connessione avvenuta";
+		stringLen = strlen(buf);
+		/* 5) IL SERVER INVIA AL CLIENT LA STRINGA "Connessione avvenuta" */
+		if (send(socketClient,buf,stringLen,0) != stringLen){
 			ErrorHandler("E' stato inviato un numero differente di byte.");
 			closesocket(socketClient);
 			ClearWinSock();
 			system("PAUSE");
 			return -1;
 		}
-		int bytestring1;
-		char string1[BUFFERSIZE];
-		bytestring1=recv(socketClient,string1,BUFFERSIZE-1,0);
-		string1[bytestring1]='\0';
-		printf ("Client: %s\n",string1);
-		char welcome[BUFFERSIZE]="ack";
-		if(send(socketClient,welcome,strlen(welcome),0)!=strlen(welcome)){
+		int bytestringA;
+			char stringaA[BUFFERSIZE];
+			int bytestringB;
+			char stringaB[BUFFERSIZE];
+		do {
+
+			bytestringA = recv(socketClient, stringaA, BUFFERSIZE - 1, 0);
+			stringaA[bytestringA]='\0';
+			printf ("Client: %s\n",stringaA);
+
+			char welcome[BUFFERSIZE]="ack";
+			if(send(socketClient, welcome, strlen(welcome), 0) != strlen(welcome)){
+				ErrorHandler("E' stato inviato un numero differente di byte.");
+				closesocket(socketClient);
+				ClearWinSock();
+				system("PAUSE");
+				return -1;
+			}
+
+
+			bytestringB = recv(socketClient, stringaB, BUFFERSIZE - 1, 0);
+			stringaB[bytestringB]='\0';
+			printf ("Client: %s\n", stringaB);
+			//char welcome2[BUFFERSIZE]="ack";
+			if(send(socketClient, welcome, strlen(welcome), 0) != strlen(welcome)){
+				ErrorHandler("E' stato inviato un numero differente di byte.");
+				closesocket(socketClient);
+				ClearWinSock();
+				system("PAUSE");
+				return -1;
+			}
+
+			/*
+			 * 7) IL SERVER RICEVE LE STRINGHE A E B E LE CONCATENA IN UN UNICA STRINGA C UGUALE AD "A + B"
+			 *    E LA INVIA DIETRO AL CLIENT; ALTRIMENTI, SE ALMENO UNA DELLE DUE STRINGHE A O B È UGUALE A "quit"
+			 *    IL SERVER INVIA AL CLIENT LA STRINGA "bye"
+			 */
+			if ((strcmp(stringaA, "quit") != 0) && (strcmp(stringaB, "quit") != 0)) {
+				char stringaC[BUFFERSIZE] = "Stringa C [A + B] =  ";
+					strcat(stringaC, stringaA);
+					strcat(stringaC, stringaB);
+
+					if(send(socketClient, stringaC, strlen(stringaC), 0) != strlen(stringaC)){
+						ErrorHandler("E' stato inviato un numero differente di byte.");
+						closesocket(socketClient);
+						ClearWinSock();
+						system("PAUSE");
+						return -1;
+					}
+			}
+		} while ((strcmp(stringaA, "quit") != 0) && (strcmp(stringaB, "quit") != 0));
+
+		char bye[5] = "bye";
+
+		if(send(socketClient, bye, strlen(bye), 0) != strlen(bye)){
 			ErrorHandler("E' stato inviato un numero differente di byte.");
 			closesocket(socketClient);
 			ClearWinSock();
