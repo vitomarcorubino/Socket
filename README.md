@@ -4,10 +4,11 @@ Hi there! 👋🏼<br>🔭 This repository provides an implementation in C of Cl
 
 ## 🌐 Collaborators Socials:
 * Priore Giovanni
+[![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/GiovanniPriore)
 * Rubino Vito Marco
 * Signorile Simone
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/vitomarcorubino) 
-[![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/GiovanniPriore)
+
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/simonesignorile) 
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/https://www.linkedin.com/in/vitomarcorubino/) 
