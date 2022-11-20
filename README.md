@@ -3,9 +3,9 @@ Hi there! 👋🏼<br>🔭 This repository provides an implementation in C of Cl
 
 
 ## 🌐 Collaborators Socials:
- Markup : * Priore Giovanni
-          * Rubino Vito Marco
-          * Signorile Simone
+* Priore Giovanni
+* Rubino Vito Marco
+* Signorile Simone
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/vitomarcorubino) 
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/GiovanniPriore)
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/simonesignorile) 
