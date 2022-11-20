@@ -4,7 +4,7 @@ Hi there! 👋🏼<br>🔭 This repository provides an implementation in C of Cl
 
 ## 🌐 Collaborators Socials:
 
-[![LinkedIn]([https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white))](https://linkedin.com/in/https://www.linkedin.com/in/vitomarcorubino/) 
+[![LinkedIn](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://linkedin.com/in/https://www.linkedin.com/in/vitomarcorubino/) 
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/https://www.linkedin.com/in/vitomarcorubino/) 
 
