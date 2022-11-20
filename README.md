@@ -1,6 +1,6 @@
 # 💫 About this repository:
 Hi there! 👋🏼<br>🔭 This repository provides an implementation in C of Client-Server socket communication using TCP protocol. <br><br>
-
+Developed by Priore Giovanni, Rubino Vito Marco and Simone Signorile.
 
 ## 🌐 Collaborators Socials:
 * Priore Giovanni <br>
@@ -11,7 +11,7 @@ Hi there! 👋🏼<br>🔭 This repository provides an implementation in C of Cl
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/simonesignorile) 
 
 
-# 💻 Tech Stack:
+# 💻 Programming language:
 ![C](https://img.shields.io/badge/c-%2300599C.svg?style=for-the-badge&logo=&logoColor=white)
 # 📊 GitHub Stats:
 ![](https://github-readme-stats.vercel.app/api?username=vitomarcorubino&theme=dark&hide_border=false&include_all_commits=true&count_private=true)<br/>
