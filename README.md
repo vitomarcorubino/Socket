@@ -3,7 +3,7 @@ Hi there! 👋🏼<br>🔭 This repository provides an implementation in C of Cl
 
 
 ## 🌐 Collaborators Socials:
-* Priore Giovanni
+* Priore Giovanni <br>
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/GiovanniPriore)
 * Rubino Vito Marco
 * Signorile Simone
