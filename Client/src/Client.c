@@ -121,7 +121,8 @@ int main(void){
 
 		/* 6) IL CLIENT LEGGE DALLO std input DUE STRINGHE A E B E LE INVIA AL SERVER */
 		printf("Digita la prima stringa (A)\n");
-		scanf("%s", stringaA);
+		scanf("\n");
+		gets(stringaA);
 
 		/* Inviare welcome a server */
 		if (send(socketClient, stringaA, strlen(stringaA), 0) != strlen(stringaA)){
@@ -134,15 +135,16 @@ int main(void){
 		/* Ricezione stringa dal server */
 		int bytestring1;
 
-		bytestring1=recv(socketClient, acknowledgement, BUFFERSIZE - 1, 0);
-		acknowledgement[bytestring1]='\0';
-		printf ("Server: %s\n", acknowledgement);
+		bytestring1 = recv(socketClient, acknowledgement, BUFFERSIZE - 1, 0);
+		acknowledgement[bytestring1] = '\0';
+		printf("Server: %s\n", acknowledgement);
 
 		printf("Digita la seconda stringa (B)\n");
-		scanf ("%s", stringaB);
+		scanf("\n");
+		gets(stringaB);
 
 
-		if (send(socketClient, stringaB,strlen(stringaB),0) != strlen(stringaB)){
+		if (send(socketClient, stringaB, strlen(stringaB),0) != strlen(stringaB)){
 			ErrorHandler("Errore nell'invio messaggio");
 			closesocket(socketClient);
 			ClearWinSock();
