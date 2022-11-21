@@ -102,7 +102,7 @@ int main(void){
 	int totalBytesRcvd = 0;
 	char buf[BUFFERSIZE];
 
-	printf ("Server: ");
+	printf("\nServer: ");
 	if ((bytesRcvd = recv(socketClient, buf, BUFFERSIZE - 1,0)) <= 0){
 		ErrorHandler("recv() fallita.");
 		closesocket(socketClient);
@@ -114,17 +114,18 @@ int main(void){
 	buf[bytesRcvd] = '\0';	// Terminatore di stringa utilizzato per far riconoscere la fine di una stringa alla printf()
 	printf ("%s\n", buf);	// Stampa del buffer
 
-	/* INIZIO PARTE LOGICA */
-	char acknowledgement[BUFFERSIZE];
+
+	char rispostaServer[BUFFERSIZE];
 	do {
-		memset(&acknowledgement, 0, sizeof(acknowledgement));
+		memset(&rispostaServer, 0, sizeof(rispostaServer));
 
 		/* 6) IL CLIENT LEGGE DALLO std input DUE STRINGHE A E B E LE INVIA AL SERVER */
-		printf("Digita la prima stringa (A)\n");
+		// Acquisizione dallo std input della prima stringa A
+		printf("\nDigita la prima stringa (A)\n");
 		scanf("\n");
 		gets(stringaA);
 
-		/* Inviare welcome a server */
+		/* Invio della stringa A al server */
 		if (send(socketClient, stringaA, strlen(stringaA), 0) != strlen(stringaA)){
 			ErrorHandler("Errore nell'invio messaggio");
 			closesocket(socketClient);
@@ -132,19 +133,21 @@ int main(void){
 			return -1;
 		}
 
-		/* Ricezione stringa dal server */
 		int bytestring1;
 
+		/*
 		bytestring1 = recv(socketClient, acknowledgement, BUFFERSIZE - 1, 0);
 		acknowledgement[bytestring1] = '\0';
 		printf("Server: %s\n", acknowledgement);
+		*/
 
+		// Acquisizione dallo std input della seconda stringa B
 		printf("Digita la seconda stringa (B)\n");
 		scanf("\n");
 		gets(stringaB);
 
-
-		if (send(socketClient, stringaB, strlen(stringaB),0) != strlen(stringaB)){
+		// Invio della seconda stringa B al server
+		if (send(socketClient, stringaB, strlen(stringaB), 0) != strlen(stringaB)){
 			ErrorHandler("Errore nell'invio messaggio");
 			closesocket(socketClient);
 			ClearWinSock();
@@ -157,16 +160,18 @@ int main(void){
 		 *   IL PROCESSO TERMINA (dopo il do-while);
 		 *   ALTRIMENTI IL CLIENT TORNA AL PASSO 6
 		 */
-		bytestring1 = recv(socketClient, acknowledgement, BUFFERSIZE - 1, 0);
-		acknowledgement[bytestring1] = '\0';
-		printf("Server: %s\n", acknowledgement);
 
+		/*
+		bytestring1 = recv(socketClient, rispostaServer, BUFFERSIZE - 1, 0);
+		rispostaServer[bytestring1] = '\0';
+		printf("Server: %s\n", rispostaServer);
+		*/
 
-		bytestring1 = recv(socketClient, acknowledgement, BUFFERSIZE - 1, 0);
-		acknowledgement[bytestring1] = '\0';
-		printf("Server: %s\n", acknowledgement);
+		bytestring1 = recv(socketClient, rispostaServer, BUFFERSIZE - 1, 0);
+		rispostaServer[bytestring1] = '\0';
+		printf("Server: %s\n", rispostaServer);
 
-	} while (strcmp(acknowledgement, "bye") != 0);
+	} while (strcmp(rispostaServer, "bye") != 0); // Il ciclo si ripete finchè il server non invia al client la stringa "bye"
 
 	// Chiusura della socket del client
 	closesocket(socketClient);
