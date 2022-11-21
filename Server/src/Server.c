@@ -107,13 +107,14 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 
-	// New Connection
+	// Costruzione dell'indirizzo del client
 	struct sockaddr_in indirizzoClient;
 	int socketClient;
 	int lunghezzaClient;
 	int stringLen=0;
-	printf ("In attesa del client...\n");
+	printf("In attesa del client...\n\n");
 
+	// Il ciclo è infinito perchè il Server resta sempre in ascolto
 	while(1){
 		lunghezzaClient=sizeof(indirizzoClient);
 		if ((socketClient=accept(nuovaSocket,(struct sockaddr*)&indirizzoClient,&lunghezzaClient))<0){
@@ -126,50 +127,56 @@ int main(int argc, char *argv[]){
 		/* 4) STABILITA LA CONNESSIONE, IL SERVER VISUALIZZA SULLO std output UN MESSAGGIO CONTENENTE
 		 *    L'IP DEL CLIENT CON CUI HA STABILITO LA CONNESSIONE.
 		 */
-		printf("Connessione stabilita con il client: %s\n", inet_ntoa(indirizzoClient.sin_addr));
+		printf("Connessione stabilita con il client: %s\n\n", inet_ntoa(indirizzoClient.sin_addr));
 
 		// Inviamo al client la conferma di avvenuta connessione
-		char*buf = "Connessione avvenuta";
-		stringLen = strlen(buf);
+		char *confermaConnessione = "Connessione avvenuta";
+		stringLen = strlen(confermaConnessione);
 		/* 5) IL SERVER INVIA AL CLIENT LA STRINGA "Connessione avvenuta" */
-		if (send(socketClient,buf,stringLen,0) != stringLen){
+		if (send(socketClient, confermaConnessione, stringLen, 0) != stringLen){
 			ErrorHandler("E' stato inviato un numero differente di byte.");
 			closesocket(socketClient);
 			ClearWinSock();
 			system("PAUSE");
 			return -1;
 		}
-		int bytestringA;
-			char stringaA[BUFFERSIZE];
-			int bytestringB;
-			char stringaB[BUFFERSIZE];
-		do {
 
+		int bytestringA;
+		char stringaA[BUFFERSIZE];
+		int bytestringB;
+		char stringaB[BUFFERSIZE];
+
+		do {
+			// Ricezione della prima stringa A
 			bytestringA = recv(socketClient, stringaA, BUFFERSIZE - 1, 0);
 			stringaA[bytestringA]='\0';
-			printf ("Client: %s\n",stringaA);
+			printf("Client: %s\n",stringaA);
 
-			char welcome[BUFFERSIZE]="ack";
-			if(send(socketClient, welcome, strlen(welcome), 0) != strlen(welcome)){
+			/*
+			char acknowledgement[BUFFERSIZE]="ack";
+			if(send(socketClient, acknowledgement, strlen(acknowledgement), 0) != strlen(acknowledgement)){
 				ErrorHandler("E' stato inviato un numero differente di byte.");
 				closesocket(socketClient);
 				ClearWinSock();
 				system("PAUSE");
 				return -1;
 			}
+			*/
 
-
+			// Ricezione della seconda stringa B
 			bytestringB = recv(socketClient, stringaB, BUFFERSIZE - 1, 0);
-			stringaB[bytestringB]='\0';
-			printf ("Client: %s\n", stringaB);
-			//char welcome2[BUFFERSIZE]="ack";
-			if(send(socketClient, welcome, strlen(welcome), 0) != strlen(welcome)){
+			stringaB[bytestringB] = '\0';
+			printf("Client: %s\n\n", stringaB);
+
+			/*
+			if(send(socketClient, acknowledgement, strlen(acknowledgement), 0) != strlen(acknowledgement)){
 				ErrorHandler("E' stato inviato un numero differente di byte.");
 				closesocket(socketClient);
 				ClearWinSock();
 				system("PAUSE");
 				return -1;
 			}
+			*/
 
 			/*
 			 * 7) IL SERVER RICEVE LE STRINGHE A E B E LE CONCATENA IN UN UNICA STRINGA C UGUALE AD "A + B"
