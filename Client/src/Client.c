@@ -53,6 +53,7 @@ int main(void){
 
 	/* Creazione della socket client */
 	int socketClient;
+					// Si utilizza SOCK_STREAM perchè TCP fornisce una connessione sequenziale, affidabile e full-duplex
 	socketClient = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	/**
 	 * @brief se la creazione della socket fallisce, termina il programma.
