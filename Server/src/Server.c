@@ -67,7 +67,8 @@ int main(int argc, char *argv[]){
 	int socketBenvenuto;
 
 	/* Si chiama la funzione socket() assegnando il valore di ritorno alla variabile appena creata */
-	socketBenvenuto = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+					   // Si utilizza SOCK_STREAM perchè TCP fornisce una connessione sequenziale, affidabile e full-duplex
+	socketBenvenuto = socket(PF_INET, SOCK_STREAM,IPPROTO_TCP);
 
 	/* Se la creazione della socket genera errori, il programma termina */
 	if (socketBenvenuto < 0){
@@ -78,6 +79,7 @@ int main(int argc, char *argv[]){
 	}
 
 	/* COSTRUZIONE DELL'INDIRIZZO DEL SERVER */
+	// Si costruisce lato server per fare successivamente la bind()
 	struct sockaddr_in indirizzoServer;
 
 	memset(&indirizzoServer, 0, sizeof(indirizzoServer));
