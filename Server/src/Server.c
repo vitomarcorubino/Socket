@@ -30,7 +30,7 @@
 #endif
 
 #define BUFFERSIZE 512 // Dimensione del buffer
-#define PROTOPORT 27015	// Numero di porta di default del protocollo
+#define PROTOPORT 27015	// Numero di porta su cui è attivo il processo server
 #define QLEN 6 // Massimo numero di connessioni che può accettare la socket tramite listen()
 
 void ErrorHandler (char *errorMessage){
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
 	if (argc > 1){
 		porta = atoi(argv[1]);
 	}
-	else porta = PROTOPORT;	// Default
+	else porta = PROTOPORT; //  Il server è attivo sulla porta 27015
 	if (porta < 0){
 		printf ("Numero di porta non valido %s \n", argv[1]);
 		return -1;
@@ -64,15 +64,15 @@ int main(int argc, char *argv[]){
 	#endif
 
 	/* Socket utilizzata per instaurare una connessione */
-	int nuovaSocket;
+	int socketBenvenuto;
 
 	/* Si chiama la funzione socket() assegnando il valore di ritorno alla variabile appena creata */
-	nuovaSocket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+	socketBenvenuto = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
 
 	/* Se la creazione della socket genera errori, il programma termina */
-	if (nuovaSocket < 0){
+	if (socketBenvenuto < 0){
 		ErrorHandler("Creazione della socket fallita.\n");
-		closesocket(nuovaSocket);
+		closesocket(socketBenvenuto);
 		ClearWinSock();
 		return -1;
 	}
@@ -92,34 +92,35 @@ int main(int argc, char *argv[]){
 	* @brief bind() associa alla socket un indirizzo in modo da poter essere contatta da un client
 	* e in caso di errore termina l'esecuzione del programma
 	*/
-	if (bind(nuovaSocket, (struct sockaddr*)&indirizzoServer, sizeof(indirizzoServer)) < 0){
+	if (bind(socketBenvenuto, (struct sockaddr*)&indirizzoServer, sizeof(indirizzoServer)) < 0){
 		ErrorHandler("Operazione di bind fallita.\n");
-		closesocket(nuovaSocket);
+		closesocket(socketBenvenuto);
 		ClearWinSock();
 		return 0;
 	}
 
 	// Si imposta la socket del server all'ascolto
-	if (listen(nuovaSocket, QLEN)<0){
+	if (listen(socketBenvenuto, QLEN) < 0){
 		ErrorHandler("Operazione di listen fallita.\n");
-		closesocket(nuovaSocket);
+		closesocket(socketBenvenuto);
 		ClearWinSock();
 		return -1;
 	}
 
 	// Costruzione dell'indirizzo del client
 	struct sockaddr_in indirizzoClient;
-	int socketClient;
+	int socketConnessione;
 	int lunghezzaClient;
-	int stringLen=0;
+	int stringLen = 0;
 	printf("In attesa del client...\n\n");
 
 	// Il ciclo è infinito perchè il Server resta sempre in ascolto
 	while(1){
-		lunghezzaClient=sizeof(indirizzoClient);
-		if ((socketClient=accept(nuovaSocket,(struct sockaddr*)&indirizzoClient,&lunghezzaClient))<0){
+		lunghezzaClient = sizeof(indirizzoClient);
+		// socket connessione
+		if ((socketConnessione = accept(socketBenvenuto,(struct sockaddr*)&indirizzoClient,&lunghezzaClient))<0){
 			ErrorHandler("Accettazione fallita.\n");
-			closesocket(nuovaSocket);
+			closesocket(socketBenvenuto);
 			ClearWinSock();
 			return-1;
 		}
@@ -133,9 +134,9 @@ int main(int argc, char *argv[]){
 		char *confermaConnessione = "Connessione avvenuta";
 		stringLen = strlen(confermaConnessione);
 		/* 5) IL SERVER INVIA AL CLIENT LA STRINGA "Connessione avvenuta" */
-		if (send(socketClient, confermaConnessione, stringLen, 0) != stringLen){
+		if (send(socketConnessione, confermaConnessione, stringLen, 0) != stringLen){
 			ErrorHandler("E' stato inviato un numero differente di byte.");
-			closesocket(socketClient);
+			closesocket(socketConnessione);
 			ClearWinSock();
 			system("PAUSE");
 			return -1;
@@ -148,9 +149,9 @@ int main(int argc, char *argv[]){
 
 		do {
 			// Ricezione della prima stringa A
-			bytestringA = recv(socketClient, stringaA, BUFFERSIZE - 1, 0);
-			stringaA[bytestringA]='\0';
-			printf("Client: %s\n",stringaA);
+			bytestringA = recv(socketConnessione, stringaA, BUFFERSIZE - 1, 0);
+			stringaA[bytestringA] = '\0';
+			printf("Client: %s\n", stringaA);
 
 			/*
 			char acknowledgement[BUFFERSIZE]="ack";
@@ -164,7 +165,7 @@ int main(int argc, char *argv[]){
 			*/
 
 			// Ricezione della seconda stringa B
-			bytestringB = recv(socketClient, stringaB, BUFFERSIZE - 1, 0);
+			bytestringB = recv(socketConnessione, stringaB, BUFFERSIZE - 1, 0);
 			stringaB[bytestringB] = '\0';
 			printf("Client: %s\n\n", stringaB);
 
@@ -185,24 +186,28 @@ int main(int argc, char *argv[]){
 			 */
 			if ((strcmp(stringaA, "quit") != 0) && (strcmp(stringaB, "quit") != 0)) {
 				char stringaC[BUFFERSIZE] = "Stringa C [A + B] =  ";
-					strcat(stringaC, stringaA);
-					strcat(stringaC, stringaB);
+				strcat(stringaC, stringaA);
+				strcat(stringaC, stringaB);
 
-					if(send(socketClient, stringaC, strlen(stringaC), 0) != strlen(stringaC)){
-						ErrorHandler("E' stato inviato un numero differente di byte.");
-						closesocket(socketClient);
-						ClearWinSock();
-						system("PAUSE");
-						return -1;
-					}
+				// Invio della stringa concatenata al client
+				if(send(socketConnessione, stringaC, strlen(stringaC), 0) != strlen(stringaC)){
+					ErrorHandler("E' stato inviato un numero differente di byte.");
+					closesocket(socketConnessione);
+					ClearWinSock();
+					system("PAUSE");
+					return -1;
+				}
 			}
+
+			// La ricezione di stringhe si interrompe quando almeno una delle due è quit
 		} while ((strcmp(stringaA, "quit") != 0) && (strcmp(stringaB, "quit") != 0));
 
 		char bye[5] = "bye";
 
-		if(send(socketClient, bye, strlen(bye), 0) != strlen(bye)){
+		// Invio di "bye" al server e chiusura della socket
+		if(send(socketConnessione, bye, strlen(bye), 0) != strlen(bye)){
 			ErrorHandler("E' stato inviato un numero differente di byte.");
-			closesocket(socketClient);
+			closesocket(socketConnessione);
 			ClearWinSock();
 			system("PAUSE");
 			return -1;
