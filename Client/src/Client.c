@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 #define BUFFERSIZE 512
-#define PROTOPROT 27015
+// #define PROTOPROT 27015
 // #define DIMENSIONEINDIRIZZO 15 // La dimensione di un indirizzo IP in notazione puntata è di 15 caratteri [xxx.xxx.xxx.xxx]
 
 void ErrorHandler (char *errorMessage){
@@ -68,6 +68,7 @@ int main(void){
 	// Con l'indirizzo IP si identifica la macchina nella rete e con il numero di porta si identifica il processo su quella macchina.
 
 	/*
+	 * Acquisizione dell'indirizzo del server
 	char indirizzo[DIMENSIONEINDIRIZZO] = "\0";
 	printf ("Indirizzo del server: ");
 	scanf("\n");
