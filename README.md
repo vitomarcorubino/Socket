@@ -1,6 +1,6 @@
 # 💫 About this repository:
 👋🏻 Hi there! <br>
-🔭 This repository provides an implementation in C of Client-Server socket communication using TCP protocol. <br><br>
+🔭 This repository provides an implementation in C of Client-Server socket communication. <br><br>
 👨🏻‍💻 Developed by Priore Giovanni, Rubino Vito Marco and Simone Signorile.
 
 ## 🌐 Collaborators Socials:
