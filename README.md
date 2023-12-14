@@ -11,5 +11,3 @@
 [![Github](https://img.shields.io/badge/GitHub-100000?logo=github&logoColor=white)](https://github.com/simonesignorile) 
 
 
-# 💻 Programming language:
-![C](https://img.shields.io/badge/c-%2300599C.svg?style=for-the-badge&logo=&logoColor=white)
